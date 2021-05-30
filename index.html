@@ -55,6 +55,11 @@
 </head>
 
 <body>
+    <script>
+        fetch('https://s3.amazonaws.com/algo.bot/cryptobot/2021.json')
+            .then(response => response.json())
+            .then(data => console.log(data));
+    </script>
     <!-- TradingView Widget BEGIN -->
     <div class="tradingview-widget-container">
         <div id="tradingview_bec16"></div>
