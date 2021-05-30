@@ -49,7 +49,7 @@
 
 <body>
 <script>
-fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
+fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', {mode: 'no-cors'})
 .then(function(u){ return u.json();})
 .then(function(jsonArr){
     let data = [];
