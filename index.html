@@ -67,7 +67,7 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
         obj = {'time': rawObj.timestamp, 'value': pnlTotal};
         chartData.push(obj);
         // table data
-        tableData.push([new Date(rawObj.timestamp * 1000), "$" + rawObj.pnl]);
+        tableData.push([(new Date(rawObj.timestamp * 1000)).toLocaleString('en-US', { hour12: false }), "$" + rawObj.pnl]);
     }
 
     GenerateChart('crypto-chart', chartData);
@@ -116,7 +116,7 @@ function GenerateTable(tableId, tableData) {
     var columnCount = tableData[0].length;
 
     // add the header row
-    header = ["TIMESTAMP", "EVENT"]
+    header = ["TIMESTAMP", "P/L"]
     var row = table.insertRow(-1);
     for (var i = 0; i < columnCount; i++) {
         var headerCell = document.createElement("TH");
@@ -125,7 +125,8 @@ function GenerateTable(tableId, tableData) {
     }
 
     // add the data rows in reverse
-    let maxRowCount = tableData.length;
+    // let maxRowCount = tableData.length;
+    let maxRowCount = 10;
     let rowCount = tableData.length - maxRowCount;
     if (rowCount < 0) {rowCount = 0;}
     for (var i = tableData.length-1; i >= rowCount; i--) {
