@@ -20,6 +20,10 @@
         color: #00C0FF;
     }
 
+    .event_table {
+        border-collapse:collapse;
+    }
+
     .contact {
         float: right;
         white-space: nowrap;
@@ -52,14 +56,18 @@
 fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
 .then(function(u){ return u.json();})
 .then(function(jsonArr){
-    let data = [];
+    let chartData = [];
+    let tableData = [];
     pnlTotal = 0;
     for (var i = 0, len = jsonArr.length; i < len; i++)
     {
         rawObj = JSON.parse(jsonArr[i]);
+        // chart data
         pnlTotal += rawObj.pnl
         obj = {'time': rawObj.timestamp, 'value': pnlTotal};
-        data.push(obj);
+        chartData.push(obj);
+        // table data
+        tableData.push([new Date(rawObj.timestamp), "$" + rawObj.pnl]);
     }
 
     var chartElement = document.getElementById('crypto-chart');
@@ -88,8 +96,43 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
         }
     });
     const lineSeries = chart.addLineSeries();
-    lineSeries.setData(data);
+    lineSeries.setData(chartData);
+
+    GenerateTable('crypto-table', tableData);
 });
+
+function GenerateTable(tableId, tableData) {
+    //Create a HTML Table element.
+    var table = document.createElement("TABLE");
+    table.border = "1";
+    table.width = "100%";
+    table.setAttribute('class', 'event_table');
+
+    //Get the count of columns.
+    var columnCount = tableData[0].length;
+
+    //Add the header row.
+    header = ["TIMESTAMP", "EVENT"]
+    var row = table.insertRow(-1);
+    for (var i = 0; i < columnCount; i++) {
+        var headerCell = document.createElement("TH");
+        headerCell.innerHTML = header[i];
+        row.appendChild(headerCell);
+    }
+
+    //Add the data rows.
+    for (var i = 1; i < tableData.length; i++) {
+        row = table.insertRow(-1);
+        for (var j = 0; j < columnCount; j++) {
+            var cell = row.insertCell(-1);
+            cell.innerHTML = tableData[i][j];
+        }
+    }
+
+    var dvTable = document.getElementById(tableId);
+    dvTable.innerHTML = "";
+    dvTable.appendChild(table);
+}
 </script>
 <div id='crypto'>
 <div id='crypto-chart'></div>
