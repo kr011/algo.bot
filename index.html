@@ -67,10 +67,15 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
         obj = {'time': rawObj.timestamp, 'value': pnlTotal};
         chartData.push(obj);
         // table data
-        tableData.push([new Date(rawObj.timestamp), "$" + rawObj.pnl]);
+        tableData.push([new Date(rawObj.timestamp * 1000), "$" + rawObj.pnl]);
     }
 
-    var chartElement = document.getElementById('crypto-chart');
+    GenerateChart('crypto-chart', chartData);
+    GenerateTable('crypto-table', tableData);
+});
+
+function GenerateChart(chartId, chartData) {
+    var chartElement = document.getElementById(chartId);
     const chart = LightweightCharts.createChart(
         chartElement,
         { width: document.body.offsetWidth, height: 300 });
@@ -95,11 +100,10 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
             },
         }
     });
+
     const lineSeries = chart.addLineSeries();
     lineSeries.setData(chartData);
-
-    GenerateTable('crypto-table', tableData);
-});
+}
 
 function GenerateTable(tableId, tableData) {
     //Create a HTML Table element.
