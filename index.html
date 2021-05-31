@@ -106,16 +106,16 @@ function GenerateChart(chartId, chartData) {
 }
 
 function GenerateTable(tableId, tableData) {
-    //Create a HTML Table element.
+    // create a HTML table element
     var table = document.createElement("TABLE");
     table.border = "1";
     table.width = "100%";
     table.setAttribute('class', 'event_table');
 
-    //Get the count of columns.
+    // get the count of columns.
     var columnCount = tableData[0].length;
 
-    //Add the header row.
+    // add the header row
     header = ["TIMESTAMP", "EVENT"]
     var row = table.insertRow(-1);
     for (var i = 0; i < columnCount; i++) {
@@ -124,8 +124,11 @@ function GenerateTable(tableId, tableData) {
         row.appendChild(headerCell);
     }
 
-    //Add the data rows.
-    for (var i = 1; i < tableData.length; i++) {
+    // add the data rows in reverse
+    let maxRowCount = tableData.length;
+    let rowCount = tableData.length - maxRowCount;
+    if (rowCount < 0) {rowCount = 0;}
+    for (var i = tableData.length-1; i >= rowCount; i--) {
         row = table.insertRow(-1);
         for (var j = 0; j < columnCount; j++) {
             var cell = row.insertCell(-1);
