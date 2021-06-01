@@ -62,6 +62,10 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
     for (var i = 0, len = jsonArr.length; i < len; i++)
     {
         rawObj = JSON.parse(jsonArr[i]);
+        if (rawObj.pnl == 0)
+        {
+            continue;
+        }
         // chart data
         pnlTotal += rawObj.pnl
         obj = {'time': rawObj.timestamp, 'value': pnlTotal};
@@ -70,8 +74,8 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
         tableData.push([(new Date(rawObj.timestamp * 1000)).toLocaleString('en-US', { hour12: false }), "$" + rawObj.pnl]);
     }
 
-    GenerateChart('crypto-chart', chartData);
-    GenerateTable('crypto-table', tableData);
+    GenerateChart('pnl-chart', chartData);
+    GenerateTable('pnl-table', tableData);
 });
 
 function GenerateChart(chartId, chartData) {
@@ -143,8 +147,8 @@ function GenerateTable(tableId, tableData) {
 }
 </script>
 <div id='crypto'>
-<div id='crypto-chart'></div>
-<div id='crypto-table'></div>
+<div id='pnl-chart'></div>
+<div id='pnl-table'></div>
 </div>
 
 <footer>
