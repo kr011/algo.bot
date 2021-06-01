@@ -110,12 +110,11 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
                     currPrice = currPriceObj.USDT;
                     roe = 0;
                     if (pos == "LONG") {
-                        roe = (obj.price - currPrice) * 100 / currPrice;
-                    }
-                    else if (pos == "SHORT") {
                         roe = (currPrice - obj.price) * 100 / currPrice;
                     }
-                    roe = obj.price / currPrice;
+                    else if (pos == "SHORT") {
+                        roe = (obj.price - currPrice) * 100 / currPrice;
+                    }
                     roeTableData.push([symbol, obj.position, Math.round((roe + Number.EPSILON) * 100) / 100]);
                     GenerateTable('roe-table', ["SYMBOL", "POSITION", "ROE%"], roeTableData);
                 });
