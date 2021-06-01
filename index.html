@@ -53,7 +53,14 @@
 
 <body>
 <script>
-fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json')
+var reqHeaders = new Headers();
+reqHeaders.append('pragma', 'no-cache');
+reqHeaders.append('cache-control', 'no-cache');
+var reqInit = {
+    method: 'GET',
+    headers: reqHeaders,
+};
+fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
 .then(function(u){ return u.json();})
 .then(function(jsonArr){
     let chartData = [];
