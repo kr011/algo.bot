@@ -104,7 +104,7 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
         if (pos == 'LONG' || pos == 'SHORT') {
             if (symbol == "BTCUSDT")
             {
-                fetch('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USDT', reqInit)
+                fetch('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USDT')
                 .then(function(u){ return u.json();})
                 .then(function(currPriceObj){
                     currPrice = currPriceObj.USDT;
