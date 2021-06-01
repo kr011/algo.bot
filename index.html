@@ -89,13 +89,14 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
             };
         }
 
+        pnlPct = round(rawObj.pnl * 100);
+        pnlPctTotal += pnlPct;
+        obj = {'time': rawObj.timestamp, 'value': pnlPctTotal};
+        pnlCharData.push(obj);
         if (rawObj.pnl == 0) {
             continue;
         }
-        pnlPctTotal += round(rawObj.pnl * 100);
-        obj = {'time': rawObj.timestamp, 'value': pnlPctTotal};
-        pnlCharData.push(obj);
-        pnlTableData.push([timestamp.toLocaleString('en-US', { hour12: false }), round(rawObj.pnl * 100)]);
+        pnlTableData.push([timestamp.toLocaleString('en-US', { hour12: false }), pnlPct]);
     }
 
     for (var symbol in lastEvents) {
