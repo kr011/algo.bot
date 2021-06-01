@@ -123,7 +123,7 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
     }
 
     GenerateChart('pnl-chart', pnlCharData);
-    GenerateTable('pnl-table', ["TIMESTAMP", "P/L%"], pnlTableData);
+    GenerateTable('pnl-table', ["TIMESTAMP", "PNL%"], pnlTableData);
 });
 
 function round(num) {
