@@ -24,6 +24,14 @@
         border-collapse:collapse;
     }
 
+    .green_background {
+        background-color: green;
+    }
+
+    .red_background {
+        background-color: red;
+    }
+
     .contact {
         float: right;
         white-space: nowrap;
@@ -108,7 +116,7 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
                         roe = (currPrice - obj.price) * 100 / currPrice;
                     }
                     roe = obj.price / currPrice;
-                    roeTableData.push([symbol, obj.position, roe.toFixed(2)]);
+                    roeTableData.push([symbol, obj.position, Math.round((roe + Number.EPSILON) * 100) / 100]);
                     GenerateTable('roe-table', ["SYMBOL", "POSITION", "ROE%"], roeTableData);
                 });
             }
@@ -182,7 +190,19 @@ function GenerateTable(tableId, tableHeader, tableData) {
         row = table.insertRow(-1);
         for (var j = 0; j < columnCount; j++) {
             var cell = row.insertCell(-1);
-            cell.innerHTML = tableData[i][j];
+            data = tableData[i][j];
+            if(typeof data == 'number') {
+                cell.innerHTML = data;
+                if (data > 0)
+                {
+                    cell.className = 'green_background';
+                } else {
+                    cell.className = 'red_background';
+                }
+            }
+            else {
+                cell.innerHTML = data;
+            }
         }
     }
 
