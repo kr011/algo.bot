@@ -63,26 +63,60 @@ var reqInit = {
 fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
 .then(function(u){ return u.json();})
 .then(function(jsonArr){
-    let chartData = [];
-    let tableData = [];
+    var pnlCharData = [];
+    var roeTableData = [];
+    var pnlTableData = [];
+    var lastEvents = {};
     pnlTotal = 0;
-    for (var i = 0, len = jsonArr.length; i < len; i++)
-    {
+
+    for (var i = 0, len = jsonArr.length; i < len; i++) {
         rawObj = JSON.parse(jsonArr[i]);
-        if (rawObj.pnl == 0)
-        {
+        symbol = rawObj.symbol
+        timestamp = new Date(rawObj.timestamp * 1000);
+        if (!(symbol in lastEvents) || lastEvents[symbol].timestamp < timestamp) {
+            lastEvents[symbol] = {
+                'timestamp': timestamp,
+                'position': rawObj.position,
+                'price': rawObj.price
+            };
+        }
+
+        if (rawObj.pnl == 0) {
             continue;
         }
-        // chart data
         pnlTotal += rawObj.pnl
         obj = {'time': rawObj.timestamp, 'value': pnlTotal};
-        chartData.push(obj);
-        // table data
-        tableData.push([(new Date(rawObj.timestamp * 1000)).toLocaleString('en-US', { hour12: false }), "$" + rawObj.pnl]);
+        pnlCharData.push(obj);
+        pnlTableData.push([timestamp.toLocaleString('en-US', { hour12: false }), rawObj.pnl]);
     }
 
-    GenerateChart('pnl-chart', chartData);
-    GenerateTable('pnl-table', tableData);
+    for (var symbol in lastEvents) {
+        obj = lastEvents[symbol]
+        pos = obj.position;
+        if (pos == 'LONG' || pos == 'SHORT') {
+            if (symbol == "BTCUSDT")
+            {
+                fetch('https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USDT', reqInit)
+                .then(function(u){ return u.json();})
+                .then(function(currPriceObj){
+                    currPrice = currPriceObj.USDT;
+                    roe = 0;
+                    if (pos == "LONG") {
+                        roe = (obj.price - currPrice) * 100 / currPrice;
+                    }
+                    else if (pos == "SHORT") {
+                        roe = (currPrice - obj.price) * 100 / currPrice;
+                    }
+                    roe = obj.price / currPrice;
+                    roeTableData.push([symbol, obj.position, roe.toFixed(2)]);
+                    GenerateTable('roe-table', ["SYMBOL", "POSITION", "ROE%"], roeTableData);
+                });
+            }
+        }
+    }
+
+    GenerateChart('pnl-chart', pnlCharData);
+    GenerateTable('pnl-table', ["TIMESTAMP", "$P/L"], pnlTableData);
 });
 
 function GenerateChart(chartId, chartData) {
@@ -116,7 +150,12 @@ function GenerateChart(chartId, chartData) {
     lineSeries.setData(chartData);
 }
 
-function GenerateTable(tableId, tableData) {
+function GenerateTable(tableId, tableHeader, tableData) {
+    if (tableData.length == 0)
+    {
+        return;
+    }
+
     // create a HTML table element
     var table = document.createElement("TABLE");
     table.border = "1";
@@ -127,11 +166,10 @@ function GenerateTable(tableId, tableData) {
     var columnCount = tableData[0].length;
 
     // add the header row
-    header = ["TIMESTAMP", "P/L"]
     var row = table.insertRow(-1);
     for (var i = 0; i < columnCount; i++) {
         var headerCell = document.createElement("TH");
-        headerCell.innerHTML = header[i];
+        headerCell.innerHTML = tableHeader[i];
         row.appendChild(headerCell);
     }
 
@@ -155,6 +193,7 @@ function GenerateTable(tableId, tableData) {
 </script>
 <div id='crypto'>
 <div id='pnl-chart'></div>
+<div id='roe-table'></div>
 <div id='pnl-table'></div>
 </div>
 
