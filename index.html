@@ -75,7 +75,7 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
     var roeTableData = [];
     var pnlTableData = [];
     var lastEvents = {};
-    pnlTotal = 0;
+    pnlPctTotal = 0;
 
     for (var i = 0, len = jsonArr.length; i < len; i++) {
         rawObj = JSON.parse(jsonArr[i]);
@@ -92,10 +92,10 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
         if (rawObj.pnl == 0) {
             continue;
         }
-        pnlTotal += rawObj.pnl
-        obj = {'time': rawObj.timestamp, 'value': pnlTotal};
+        pnlPctTotal += round(rawObj.pnl * 100);
+        obj = {'time': rawObj.timestamp, 'value': pnlPctTotal};
         pnlCharData.push(obj);
-        pnlTableData.push([timestamp.toLocaleString('en-US', { hour12: false }), rawObj.pnl]);
+        pnlTableData.push([timestamp.toLocaleString('en-US', { hour12: false }), round(rawObj.pnl * 100)]);
     }
 
     for (var symbol in lastEvents) {
@@ -115,7 +115,7 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
                     else if (pos == "SHORT") {
                         roe = (obj.price - currPrice) * 100 / currPrice;
                     }
-                    roeTableData.push([symbol, obj.position, Math.round((roe + Number.EPSILON) * 100) / 100]);
+                    roeTableData.push([symbol, obj.position, round(roe)]);
                     GenerateTable('roe-table', ["SYMBOL", "POSITION", "ROE%"], roeTableData);
                 });
             }
@@ -125,6 +125,10 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
     GenerateChart('pnl-chart', pnlCharData);
     GenerateTable('pnl-table', ["TIMESTAMP", "P/L%"], pnlTableData);
 });
+
+function round(num) {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+}
 
 function GenerateChart(chartId, chartData) {
     var chartElement = document.getElementById(chartId);
