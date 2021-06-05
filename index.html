@@ -78,22 +78,21 @@ fetch('https://s3.amazonaws.com/algo.bot/crypto/2021.json', reqInit)
     pnlPctTotal = 0;
 
     for (var i = 0, len = jsonArr.length; i < len; i++) {
-        rawObj = JSON.parse(jsonArr[i]);
-        symbol = rawObj.symbol
-        timestamp = new Date(rawObj.timestamp * 1000);
+        symbol = jsonArr[i].symbol
+        timestamp = new Date(jsonArr[i].timestamp * 1000);
         if (!(symbol in lastEvents) || lastEvents[symbol].timestamp < timestamp) {
             lastEvents[symbol] = {
                 'timestamp': timestamp,
-                'position': rawObj.position,
-                'price': rawObj.price
+                'position': jsonArr[i].position,
+                'price': jsonArr[i].price
             };
         }
 
-        pnlPct = round(rawObj.pnl * 100);
+        pnlPct = round(jsonArr[i].pnl * 100);
         pnlPctTotal += pnlPct;
-        obj = {'time': rawObj.timestamp, 'value': pnlPctTotal};
+        obj = {'time': jsonArr[i].timestamp, 'value': pnlPctTotal};
         pnlCharData.push(obj);
-        if (rawObj.pnl == 0) {
+        if (jsonArr[i].pnl == 0) {
             continue;
         }
         pnlTableData.push([timestamp.toLocaleString('en-US', { hour12: false }), pnlPct]);
